@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>培训证书核验</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <h1>培训证书在线核验</h1>
+    <p>输入证书编号与学员姓名，即可核验培训证书信息</p>
+  </header>
+
+  <main class="container">
+    <section class="card main-card">
+      <form id="verifyForm" autocomplete="off">
+        <div class="form-row">
+          <div class="field">
+            <label for="certNo">证书编号</label>
+            <input id="certNo" name="certNo" placeholder="例如：PX-2026-0001" required maxlength="40" />
+          </div>
+          <div class="field">
+            <label for="studentName">学员姓名</label>
+            <input id="studentName" name="studentName" placeholder="证书上的学员姓名" required maxlength="30" />
+          </div>
+          <div class="field" style="flex: 0 0 auto; align-self: flex-end;">
+            <button class="btn" type="submit" id="verifyBtn">立即核验</button>
+          </div>
+        </div>
+      </form>
+      <div id="verifyAlert" class="alert"></div>
+    </section>
+
+    <section id="resultCard" class="card hidden">
+      <div class="cert-head">
+        <h2>证书核验结果</h2>
+        <span id="statusBadge" class="badge"></span>
+      </div>
+      <dl class="cert-grid">
+        <div class="cert-item"><dt>学员姓名</dt><dd id="rName"></dd></div>
+        <div class="cert-item"><dt>证书编号</dt><dd id="rNo"></dd></div>
+        <div class="cert-item"><dt>课程名称</dt><dd id="rCourse"></dd></div>
+        <div class="cert-item"><dt>发证日期</dt><dd id="rIssued"></dd></div>
+        <div class="cert-item"><dt>有效期至</dt><dd id="rValid"></dd></div>
+        <div class="cert-item"><dt>培训机构</dt><dd id="rOrg"></dd></div>
+      </dl>
+      <p id="statusNote" class="muted" style="margin-top:14px;"></p>
+
+      <div class="cert-actions">
+        <p style="margin:0 0 10px;font-size:14px;">
+          当前登记联系邮箱：<strong id="rEmail">—</strong>
+          。如邮箱有误，可申请更正（需通过邮箱验证码确认）。
+        </p>
+        <button class="btn btn-secondary btn-sm" id="openChangeBtn" type="button">申请更正联系邮箱</button>
+      </div>
+    </section>
+
+    <!-- 邮箱更正弹窗 -->
+    <div class="modal-mask" id="changeModal">
+      <div class="modal">
+        <h3>更正联系邮箱</h3>
+        <div id="changeAlert" class="alert"></div>
+        <div class="field">
+          <label for="newEmail">新联系邮箱</label>
+          <input id="newEmail" type="email" placeholder="example@mail.com" maxlength="200" />
+        </div>
+        <div class="field">
+          <label for="code">邮箱验证码</label>
+          <div style="display:flex;gap:10px;">
+            <input id="code" inputmode="numeric" maxlength="6" placeholder="6 位数字验证码" style="flex:1;" />
+            <button class="btn btn-secondary" type="button" id="sendCodeBtn" style="white-space:nowrap;">发送验证码</button>
+          </div>
+          <p class="muted" id="codeHint" style="margin:8px 0 0;"></p>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-secondary" type="button" id="cancelChangeBtn">取消</button>
+          <button class="btn" type="button" id="confirmChangeBtn">确认更正</button>
+        </div>
+      </div>
+    </div>
+
+    <p class="footer">
+      本页面仅提供证书真实性核验，结果以发证机构登记信息为准。
+      工作人员入口：<a href="/admin">管理后台</a>
+    </p>
+  </main>
+
+  <script src="/public.js"></script>
+</body>
+</html>

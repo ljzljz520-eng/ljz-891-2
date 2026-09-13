@@ -1,0 +1,17 @@
+{
+  "name": "certificate-verify",
+  "version": "1.0.0",
+  "description": "培训证书核验与后台管理系统",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "reset-password": "node src/cli/reset-password.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "express-session": "^1.19.0"
+  }
+}

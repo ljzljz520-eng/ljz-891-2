@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>管理后台 · 培训证书平台</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <!-- 登录页 -->
+  <div id="loginView" class="login-wrap">
+    <div class="card">
+      <h2>管理后台登录</h2>
+      <p class="sub">培训证书核验平台 · 仅限授权工作人员</p>
+      <div id="loginAlert" class="alert"></div>
+      <form id="loginForm">
+        <div class="field">
+          <label for="loginUser">管理员账号</label>
+          <input id="loginUser" autocomplete="username" required maxlength="32" />
+        </div>
+        <div class="field">
+          <label for="loginPwd">密码</label>
+          <input id="loginPwd" type="password" autocomplete="current-password" required maxlength="128" />
+        </div>
+        <button class="btn" type="submit" style="width:100%;" id="loginBtn">登 录</button>
+      </form>
+      <p class="muted" style="text-align:center;margin:16px 0 0;">
+        <a href="/">← 返回证书核验页</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- 主界面 -->
+  <div id="appView" class="hidden">
+    <div class="topbar">
+      <span class="brand">证书管理后台</span>
+      <nav class="tabs">
+        <button class="tab active" data-tab="dash">概览</button>
+        <button class="tab" data-tab="certs">证书管理</button>
+        <button class="tab" data-tab="admins">管理员</button>
+        <button class="tab" data-tab="logs">审计日志</button>
+      </nav>
+      <span class="muted" id="whoami"></span>
+      <button class="btn btn-secondary btn-sm" id="changePwdBtn">修改密码</button>
+      <button class="btn btn-secondary btn-sm" id="logoutBtn">退出</button>
+    </div>
+
+    <main class="content container wide">
+      <div id="globalAlert" class="alert"></div>
+
+      <!-- 概览 -->
+      <section data-panel="dash">
+        <div class="stats" id="statsBox"></div>
+        <div class="card">
+          <h3 style="margin-top:0;">使用说明</h3>
+          <ul style="margin:0;padding-left:20px;color:#374151;">
+            <li>在「证书管理」中录入、编辑、吊销或删除证书；证书状态由有效期与吊销标记自动计算。</li>
+            <li>学员在核验页可凭证书编号 + 姓名核验，并通过邮箱验证码流程自行更正联系邮箱。</li>
+            <li>「管理员」可新增多名工作人员、停用账号或重置密码；不能停用自己。</li>
+            <li>所有登录与数据变更均记录在「审计日志」中。</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 证书管理 -->
+      <section data-panel="certs" class="hidden">
+        <div class="toolbar">
+          <input type="search" id="certSearch" placeholder="搜索编号 / 姓名 / 课程 / 机构" />
+          <button class="btn btn-sm btn-secondary" id="searchBtn">搜索</button>
+          <button class="btn btn-sm" id="addCertBtn">＋ 录入证书</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>编号</th><th>姓名</th><th>课程名称</th><th>发证日期</th>
+                <th>有效期至</th><th>培训机构</th><th>联系邮箱</th><th>状态</th><th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="certTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 管理员 -->
+      <section data-panel="admins" class="hidden">
+        <div class="toolbar">
+          <span style="font-weight:700;">管理员账号</span>
+          <span style="flex:1;"></span>
+          <button class="btn btn-sm" id="addAdminBtn">＋ 新增管理员</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>账号</th><th>显示名称</th><th>状态</th><th>创建人</th><th>创建时间</th><th>操作</th></tr>
+            </thead>
+            <tbody id="adminTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 日志 -->
+      <section data-panel="logs" class="hidden">
+        <div class="toolbar">
+          <span style="font-weight:700;">最近审计日志</span>
+          <span style="flex:1;"></span>
+          <button class="btn btn-sm btn-secondary" id="refreshLogsBtn">刷新</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>时间</th><th>操作人</th><th>动作</th><th>详情</th></tr></thead>
+            <tbody id="logTbody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- 证书编辑弹窗 -->
+  <div class="modal-mask" id="certModal">
+    <div class="modal">
+      <h3 id="certModalTitle">录入证书</h3>
+      <div id="certModalAlert" class="alert"></div>
+      <div class="form-row">
+        <div class="field">
+          <label>证书编号 *</label>
+          <input id="f_certNo" maxlength="40" placeholder="PX-2026-0001" />
+        </div>
+        <div class="field">
+          <label>学员姓名 *</label>
+          <input id="f_studentName" maxlength="30" />
+        </div>
+      </div>
+      <div class="field">
+        <label>课程名称 *</label>
+        <input id="f_courseName" maxlength="100" />
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>发证日期 *</label>
+          <input id="f_issuedAt" type="date" />
+        </div>
+        <div class="field">
+          <label>有效期至 *</label>
+          <input id="f_validUntil" type="date" />
+        </div>
+      </div>
+      <div class="field">
+        <label>培训机构 *</label>
+        <input id="f_organization" maxlength="100" />
+      </div>
+      <div class="field">
+        <label>联系邮箱（选填，学员可自行更正）</label>
+        <input id="f_email" type="email" maxlength="200" placeholder="留空表示未登记" />
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-secondary" data-close="certModal">取消</button>
+        <button class="btn" id="saveCertBtn">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 吊销弹窗 -->
+  <div class="modal-mask" id="revokeModal">
+    <div class="modal">
+      <h3>吊销证书</h3>
+      <div id="revokeModalAlert" class="alert"></div>
+      <p class="muted" id="revokeCertInfo"></p>
+      <div class="field">
+        <label>吊销原因 *</label>
+        <textarea id="revokeReason" rows="3" maxlength="200" placeholder="例如：提交材料不实，依规吊销"></textarea>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-secondary" data-close="revokeModal">取消</button>
+        <button class="btn btn-danger" id="confirmRevokeBtn">确认吊销</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 新增管理员弹窗 -->
+  <div class="modal-mask" id="adminModal">
+    <div class="modal">
+      <h3>新增管理员</h3>
+      <div id="adminModalAlert" class="alert"></div>
+      <div class="field">
+        <label>登录账号 *（3-32 位字母、数字、下划线）</label>
+        <input id="af_username" maxlength="32" />
+      </div>
+      <div class="field">
+        <label>显示名称</label>
+        <input id="af_displayName" maxlength="30" />
+      </div>
+      <div class="field">
+        <label>初始密码 *（至少 8 位，含字母和数字）</label>
+        <input id="af_password" type="text" maxlength="128" placeholder="建议使用强密码并线下告知本人" />
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-secondary" data-close="adminModal">取消</button>
+        <button class="btn" id="saveAdminBtn">创建</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 重置密码弹窗 -->
+  <div class="modal-mask" id="resetPwdModal">
+    <div class="modal">
+      <h3>重置管理员密码</h3>
+      <div id="resetPwdAlert" class="alert"></div>
+      <p class="muted" id="resetPwdInfo"></p>
+      <div class="field">
+        <label>新密码 *（至少 8 位，含字母和数字）</label>
+        <input id="rf_password" type="text" maxlength="128" />
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-secondary" data-close="resetPwdModal">取消</button>
+        <button class="btn" id="confirmResetPwdBtn">确认重置</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 修改自己的密码 -->
+  <div class="modal-mask" id="changePwdModal">
+    <div class="modal">
+      <h3>修改我的密码</h3>
+      <div id="changePwdAlert" class="alert"></div>
+      <div class="field">
+        <label>原密码</label>
+        <input id="cp_old" type="password" maxlength="128" />
+      </div>
+      <div class="field">
+        <label>新密码（至少 8 位，含字母和数字）</label>
+        <input id="cp_new" type="password" maxlength="128" />
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-secondary" data-close="changePwdModal">取消</button>
+        <button class="btn" id="confirmChangePwdBtn">确认修改</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/admin.js"></script>
+</body>
+</html>

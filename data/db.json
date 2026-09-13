@@ -1,0 +1,117 @@
+{
+  "seq": 10,
+  "admins": [
+    {
+      "id": "adm_00000001",
+      "username": "admin",
+      "displayName": "系统管理员",
+      "password": "5ef88cb01b4135e0145de313b2046d03:16af50132e3de282ea65baa9f7cff1a38b88fd052c6274bbecf3208e061505f769ac9e16776937186bd1cfc6995b4062de6f4da95d064b5df4f2b40cd6b1151c",
+      "active": true,
+      "createdAt": "2026-09-13T04:39:54.395Z",
+      "createdBy": null
+    },
+    {
+      "id": "adm_00000002",
+      "username": "auditor",
+      "displayName": "审核员小王",
+      "password": "8c8ffb0d4947fd1d92d29a65ef9ce201:8b8d563416b075965a4da7684641a72ec6d37a30922873cba144c60ada3fbcd4002743810e1de1e899724200508380862ce467b871cef14786396d9364910fb3",
+      "active": true,
+      "createdAt": "2026-09-13T04:39:54.423Z",
+      "createdBy": null
+    }
+  ],
+  "certificates": [
+    {
+      "id": "crt_00000003",
+      "certNo": "PX-2026-0001",
+      "studentName": "张伟",
+      "courseName": "安全生产管理人员培训",
+      "issuedAt": "2026-01-15",
+      "validUntil": "2029-01-14",
+      "organization": "中安应急技术培训中心",
+      "email": "zhangwei@example.com",
+      "revoked": false,
+      "revokeReason": "",
+      "createdAt": "2026-09-13T04:39:54.423Z",
+      "updatedAt": "2026-09-13T04:39:54.423Z",
+      "createdBy": "admin"
+    },
+    {
+      "id": "crt_00000004",
+      "certNo": "PX-2026-0002",
+      "studentName": "李娜",
+      "courseName": "特种设备作业人员培训",
+      "issuedAt": "2023-03-01",
+      "validUntil": "2026-03-01",
+      "organization": "华鉴职业技能培训学校",
+      "email": "",
+      "revoked": false,
+      "revokeReason": "",
+      "createdAt": "2026-09-13T04:39:54.423Z",
+      "updatedAt": "2026-09-13T04:39:54.423Z",
+      "createdBy": "admin"
+    },
+    {
+      "id": "crt_00000005",
+      "certNo": "PX-2026-0003",
+      "studentName": "王芳",
+      "courseName": "急救护理技能培训",
+      "issuedAt": "2026-05-20",
+      "validUntil": "2029-05-19",
+      "organization": "红十字应急救护培训基地",
+      "email": "wangfang@example.com",
+      "revoked": false,
+      "revokeReason": "",
+      "createdAt": "2026-09-13T04:39:54.423Z",
+      "updatedAt": "2026-09-13T04:39:54.423Z",
+      "createdBy": "admin"
+    },
+    {
+      "id": "crt_00000006",
+      "certNo": "PX-2025-0088",
+      "studentName": "陈强",
+      "courseName": "消防安全责任人培训",
+      "issuedAt": "2025-06-10",
+      "validUntil": "2028-06-09",
+      "organization": "中安应急技术培训中心",
+      "email": "",
+      "revoked": true,
+      "revokeReason": "提交材料不实，依规吊销",
+      "createdAt": "2026-09-13T04:39:54.423Z",
+      "updatedAt": "2026-09-13T04:39:54.424Z",
+      "createdBy": "admin"
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "log_00000007",
+      "at": "2026-09-13T04:39:54.424Z",
+      "actor": "admin",
+      "actorName": "系统管理员",
+      "action": "system.seed",
+      "detail": {
+        "msg": "初始化演示数据"
+      }
+    },
+    {
+      "id": "log_00000008",
+      "at": "2026-09-13T04:40:07.140Z",
+      "actor": "admin",
+      "actorName": "系统管理员",
+      "action": "login.ok",
+      "detail": {}
+    },
+    {
+      "id": "log_00000010",
+      "at": "2026-09-13T05:19:48.833Z",
+      "detail": {
+        "certNo": "PX-2026-0001",
+        "studentName": "张伟",
+        "hit": true
+      },
+      "actor": "public",
+      "actorName": "公众核验",
+      "action": "cert.verify"
+    }
+  ]
+}
