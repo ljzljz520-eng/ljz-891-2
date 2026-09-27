@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>管理后台 - 培训证书核验平台</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <div class="brand">培训证书核验平台 · 管理后台</div>
+      <nav>
+        <a href="/">核验页</a>
+        <span id="whoami" class="muted" hidden></span>
+        <button class="btn btn-small" id="logout-btn" hidden>退出登录</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- 登录 -->
+    <section id="login-view" class="card narrow">
+      <h1>管理员登录</h1>
+      <form id="login-form" autocomplete="off">
+        <label>用户名
+          <input name="username" required maxlength="32" placeholder="admin">
+        </label>
+        <label>密码
+          <input name="password" type="password" required placeholder="••••••••">
+        </label>
+        <button type="submit" class="btn btn-primary">登录</button>
+      </form>
+      <div id="login-error" class="alert alert-error" hidden></div>
+    </section>
+
+    <!-- 后台 -->
+    <section id="dash-view" hidden>
+      <div class="tabs">
+        <button class="tab active" data-tab="certs">证书管理</button>
+        <button class="tab" data-tab="admins">管理员</button>
+        <button class="tab" data-tab="audit">操作日志</button>
+        <button class="tab" data-tab="password">修改密码</button>
+      </div>
+
+      <!-- 证书管理 -->
+      <div id="tab-certs" class="tab-panel">
+        <div class="toolbar">
+          <input id="cert-q" placeholder="搜索编号 / 姓名 / 课程 / 机构 / 邮箱">
+          <button class="btn" id="cert-search">搜索</button>
+          <button class="btn btn-primary" id="cert-add">新增证书</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>证书编号</th><th>姓名</th><th>课程名称</th><th>培训机构</th>
+                <th>发证日期</th><th>有效期至</th><th>状态</th><th>联系邮箱</th><th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="cert-rows"></tbody>
+          </table>
+        </div>
+        <div class="pager">
+          <button class="btn btn-small" id="page-prev">上一页</button>
+          <span id="page-info" class="muted"></span>
+          <button class="btn btn-small" id="page-next">下一页</button>
+        </div>
+      </div>
+
+      <!-- 管理员 -->
+      <div id="tab-admins" class="tab-panel" hidden>
+        <div class="card">
+          <h3>新增管理员</h3>
+          <form id="admin-add-form" class="inline-form" autocomplete="off">
+            <input name="username" required maxlength="32" placeholder="用户名（3-32 位）">
+            <input name="password" type="password" required placeholder="密码（8 位以上，含字母和数字）">
+            <button type="submit" class="btn btn-primary">添加</button>
+          </form>
+          <div id="admin-add-msg" class="alert" hidden></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>用户名</th><th>状态</th><th>创建时间</th><th>操作</th></tr></thead>
+            <tbody id="admin-rows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 操作日志 -->
+      <div id="tab-audit" class="tab-panel" hidden>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>时间</th><th>操作</th><th>操作人</th><th>详情</th></tr></thead>
+            <tbody id="audit-rows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 修改密码 -->
+      <div id="tab-password" class="tab-panel" hidden>
+        <div class="card narrow">
+          <h3>修改我的密码</h3>
+          <form id="pw-form" autocomplete="off">
+            <label>原密码<input name="old_password" type="password" required></label>
+            <label>新密码<input name="new_password" type="password" required placeholder="8 位以上，含字母和数字"></label>
+            <button type="submit" class="btn btn-primary">保存</button>
+          </form>
+          <div id="pw-msg" class="alert" hidden></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 证书编辑弹窗 -->
+  <div id="cert-modal" class="modal" hidden>
+    <div class="modal-body">
+      <h3 id="cert-modal-title">新增证书</h3>
+      <form id="cert-form" autocomplete="off">
+        <label>证书编号<input name="cert_no" required maxlength="32" placeholder="如 CERT-2026-0001"></label>
+        <label>姓名<input name="name" required maxlength="64"></label>
+        <label>课程名称<input name="course_name" required maxlength="128"></label>
+        <label>培训机构<input name="org" required maxlength="128"></label>
+        <div class="form-row">
+          <label>发证日期<input name="issue_date" type="date" required></label>
+          <label>有效期至<input name="valid_until" type="date" required></label>
+        </div>
+        <label>联系邮箱<input name="contact_email" type="email" maxlength="254" placeholder="选填"></label>
+        <div class="modal-actions">
+          <button type="button" class="btn" id="cert-cancel">取消</button>
+          <button type="submit" class="btn btn-primary">保存</button>
+        </div>
+      </form>
+      <div id="cert-form-error" class="alert alert-error" hidden></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="/assets/admin.js"></script>
+</body>
+</html>

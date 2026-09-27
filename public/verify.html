@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>培训证书核验平台</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <div class="brand">培训证书核验平台</div>
+      <nav><a href="/admin">管理后台</a></nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <h1>证书核验</h1>
+      <p class="muted">请输入证书编号与学员姓名，核验证书真伪及当前状态。</p>
+      <form id="verify-form" autocomplete="off">
+        <div class="form-row">
+          <label>证书编号
+            <input name="cert_no" required maxlength="32" placeholder="如 CERT-2025-0001">
+          </label>
+          <label>姓名
+            <input name="name" required maxlength="64" placeholder="学员姓名">
+          </label>
+        </div>
+        <button type="submit" class="btn btn-primary" id="verify-btn">立即核验</button>
+      </form>
+      <div id="verify-error" class="alert alert-error" hidden></div>
+    </section>
+
+    <section id="result" class="card" hidden>
+      <div class="result-head">
+        <h2>核验结果</h2>
+        <span id="status-badge" class="badge"></span>
+      </div>
+      <dl class="info-grid">
+        <div><dt>课程名称</dt><dd id="f-course"></dd></div>
+        <div><dt>发证日期</dt><dd id="f-issue"></dd></div>
+        <div><dt>有效期至</dt><dd id="f-valid"></dd></div>
+        <div><dt>培训机构</dt><dd id="f-org"></dd></div>
+        <div><dt>证书编号</dt><dd id="f-no"></dd></div>
+        <div><dt>姓名</dt><dd id="f-name"></dd></div>
+        <div><dt>联系邮箱</dt><dd id="f-email"></dd></div>
+      </dl>
+
+      <hr>
+      <h3>联系邮箱更正</h3>
+      <p class="muted">如联系邮箱有误，可通过新邮箱接收验证码自助完成更正。</p>
+      <form id="ec-form" autocomplete="off">
+        <label>新邮箱
+          <input name="new_email" type="email" required maxlength="254" placeholder="name@example.com">
+        </label>
+        <div class="code-row">
+          <label>邮箱验证码
+            <input name="code" required maxlength="6" inputmode="numeric" placeholder="6 位数字">
+          </label>
+          <button type="button" class="btn" id="send-code">发送验证码</button>
+        </div>
+        <button type="submit" class="btn btn-primary">确认更正</button>
+      </form>
+      <div id="ec-msg" class="alert" hidden></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">演示环境：验证码邮件写入服务器 data/outbox.log，接口同步返回 dev_code。</div>
+  </footer>
+
+  <script src="/assets/verify.js"></script>
+</body>
+</html>

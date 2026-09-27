@@ -1,0 +1,14 @@
+{
+  "name": "cert-verify",
+  "version": "1.0.0",
+  "private": true,
+  "description": "培训证书核验系统：学员核验页 + 多管理员后台 + 邮箱验证码更正流程",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node test/smoke.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
