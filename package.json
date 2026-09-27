@@ -1,0 +1,15 @@
+{
+  "name": "training-cert-verifier",
+  "version": "1.0.0",
+  "description": "培训证书核验系统：学员证书核验、邮箱验证码更正、多管理员后台维护",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "NODE_ENV=development node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}

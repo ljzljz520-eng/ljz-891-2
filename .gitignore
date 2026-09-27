@@ -23,3 +23,7 @@ __pycache__/
 *.log
 .env
 .env.*
+
+# 运行时数据（含密码哈希、HMAC 密钥、验证码记录、邮件日志）
+/data/
+!.env.example

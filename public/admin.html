@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>管理后台 · 培训证书核验平台</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%231d4ed8' d='M12 2 3 6v6c0 5 3.8 9.4 9 10 5.2-.6 9-5 9-10V6l-9-4zm-1 13.4-3-3L9.4 11 11 12.6l3.6-3.6L16 10.4 11 15.4z'/%3E%3C/svg%3E" />
+</head>
+<body>
+  <!-- 登录视图 -->
+  <div class="login-wrap" id="loginView">
+    <div class="login-card">
+      <div class="logo">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <h1>证书管理后台</h1>
+      <p class="sub">培训证书核验平台 · 管理员登录</p>
+      <div id="loginAlert" class="alert alert-error" hidden></div>
+      <form id="loginForm">
+        <div class="form-row">
+          <label for="loginUsername">用户名</label>
+          <input class="input" id="loginUsername" autocomplete="username" required maxlength="32" />
+        </div>
+        <div class="form-row">
+          <label for="loginPassword">密码</label>
+          <input class="input" id="loginPassword" type="password" autocomplete="current-password" required maxlength="200" />
+        </div>
+        <button class="btn btn-primary btn-block" id="loginBtn" type="submit">登录</button>
+      </form>
+      <p style="text-align:center;margin:18px 0 0"><a href="/" style="font-size:13px">← 返回证书核验首页</a></p>
+    </div>
+  </div>
+
+  <!-- 后台主视图 -->
+  <div class="admin-shell" id="adminView" hidden>
+    <header class="admin-header">
+      <div class="admin-header-inner">
+        <div class="brand">
+          <span class="brand-badge" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 6v6c0 5 3.8 9.4 9 10 5.2-.6 9-5 9-10V6l-9-4z"/><path d="m9 12 2 2 4-4"/></svg>
+          </span>
+          证书管理后台
+        </div>
+        <span class="topbar-spacer" style="flex:1"></span>
+        <span class="user-chip">
+          <span class="avatar" id="userAvatar"></span>
+          <span id="userName"></span>
+          <span id="userRole" class="role-tag" style="background:rgba(255,255,255,.14);color:#e2e8f0"></span>
+        </span>
+        <button class="btn btn-ghost btn-sm" id="changePwdBtn" style="background:transparent;color:#e2e8f0;border-color:rgba(255,255,255,.3)">修改密码</button>
+        <button class="btn btn-ghost btn-sm" id="logoutBtn" style="background:transparent;color:#e2e8f0;border-color:rgba(255,255,255,.3)">退出</button>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <div id="mustChangeAlert" class="alert alert-warning" hidden>
+        系统检测到当前为初始密码，请尽快点击右上角「修改密码」完成更换。
+      </div>
+
+      <div class="tabs" id="tabs">
+        <button class="tab active" data-tab="certs">证书管理</button>
+        <button class="tab" data-tab="admins" id="tabAdmins">管理员</button>
+        <button class="tab" data-tab="logs" id="tabLogs">操作日志</button>
+      </div>
+
+      <!-- 证书管理 -->
+      <section id="tab-certs">
+        <div class="panel-card">
+          <div class="toolbar">
+            <input class="input grow" id="certSearch" placeholder="搜索证书编号 / 姓名 / 课程名称" />
+            <select class="select" id="certStatusFilter">
+              <option value="">全部状态</option>
+              <option value="valid">有效</option>
+              <option value="expiring">即将到期</option>
+              <option value="expired">已过期</option>
+              <option value="revoked">已吊销</option>
+            </select>
+            <button class="btn btn-primary btn-sm" id="certSearchBtn">查询</button>
+            <button class="btn btn-ghost btn-sm" id="certResetBtn">重置</button>
+            <span style="flex:1"></span>
+            <button class="btn btn-primary btn-sm" id="certCreateBtn">+ 新增证书</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead>
+                <tr>
+                  <th>证书编号</th>
+                  <th>学员姓名</th>
+                  <th>课程名称</th>
+                  <th>发证日期</th>
+                  <th>有效期至</th>
+                  <th>培训机构</th>
+                  <th>联系邮箱</th>
+                  <th>状态</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="certTbody"></tbody>
+            </table>
+          </div>
+          <div id="certEmpty" class="empty" hidden>暂无证书数据，点击「新增证书」录入。</div>
+          <div class="pagination">
+            <span id="certPageInfo"></span>
+            <div class="pager">
+              <button class="btn btn-ghost btn-sm" id="certPrevBtn">上一页</button>
+              <span id="certPageNo"></span>
+              <button class="btn btn-ghost btn-sm" id="certNextBtn">下一页</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 管理员 -->
+      <section id="tab-admins" hidden>
+        <div class="panel-card">
+          <div class="toolbar">
+            <strong>管理员账号</strong>
+            <span style="flex:1"></span>
+            <button class="btn btn-primary btn-sm" id="adminCreateBtn">+ 新增管理员</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead>
+                <tr>
+                  <th>用户名</th>
+                  <th>显示姓名</th>
+                  <th>角色</th>
+                  <th>状态</th>
+                  <th>创建时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="adminTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 操作日志 -->
+      <section id="tab-logs" hidden>
+        <div class="panel-card">
+          <div class="toolbar">
+            <select class="select" id="logActionFilter">
+              <option value="">全部操作</option>
+              <option value="admin.login">登录成功</option>
+              <option value="admin.login_failed">登录失败</option>
+              <option value="admin.logout">退出</option>
+              <option value="cert.created">新增证书</option>
+              <option value="cert.updated">编辑证书</option>
+              <option value="cert.revoked">吊销证书</option>
+              <option value="cert.restored">恢复证书</option>
+              <option value="cert.deleted">删除证书</option>
+              <option value="email.corrected">学员自助更正邮箱</option>
+              <option value="admin.created">新增管理员</option>
+              <option value="admin.updated">修改管理员</option>
+              <option value="admin.deleted">删除管理员</option>
+              <option value="admin.password_reset">重置密码</option>
+            </select>
+            <button class="btn btn-primary btn-sm" id="logFilterBtn">查询</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead>
+                <tr>
+                  <th>时间</th>
+                  <th>操作人</th>
+                  <th>操作</th>
+                  <th>对象</th>
+                  <th>来源 IP</th>
+                  <th>详情</th>
+                </tr>
+              </thead>
+              <tbody id="logTbody"></tbody>
+            </table>
+          </div>
+          <div id="logEmpty" class="empty" hidden>暂无日志。</div>
+          <div class="pagination">
+            <span id="logPageInfo"></span>
+            <div class="pager">
+              <button class="btn btn-ghost btn-sm" id="logPrevBtn">上一页</button>
+              <span id="logPageNo"></span>
+              <button class="btn btn-ghost btn-sm" id="logNextBtn">下一页</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- 证书编辑弹窗 -->
+  <div class="modal-mask" id="certModal" hidden>
+    <div class="modal" style="max-width:640px" role="dialog" aria-modal="true">
+      <div class="modal-head">
+        <h3 id="certModalTitle">新增证书</h3>
+        <button class="modal-close" data-close="certModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="certFormAlert" class="alert alert-error" hidden></div>
+        <form id="certForm">
+          <div class="form-grid">
+            <div class="form-row">
+              <label>证书编号 *</label>
+              <input class="input" id="cf_certNo" maxlength="64" />
+            </div>
+            <div class="form-row">
+              <label>学员姓名 *</label>
+              <input class="input" id="cf_studentName" maxlength="50" />
+            </div>
+            <div class="form-row full">
+              <label>课程名称 *</label>
+              <input class="input" id="cf_courseName" maxlength="120" />
+            </div>
+            <div class="form-row full">
+              <label>培训机构 *</label>
+              <input class="input" id="cf_institution" maxlength="120" />
+            </div>
+            <div class="form-row">
+              <label>发证日期 *</label>
+              <input class="input" id="cf_issueDate" type="date" />
+            </div>
+            <div class="form-row">
+              <label>有效期截止日 <span id="longTermHint" style="font-weight:400;color:var(--text-3)"></span></label>
+              <input class="input" id="cf_validUntil" type="date" />
+            </div>
+            <div class="form-row full">
+              <label class="checkbox-row">
+                <input type="checkbox" id="cf_longTerm" /> 长期有效（不设截止日期）
+              </label>
+            </div>
+            <div class="form-row full">
+              <label>联系邮箱（选填）</label>
+              <input class="input" id="cf_contactEmail" type="email" maxlength="254" placeholder="name@example.com" />
+            </div>
+            <div class="form-row full">
+              <label class="checkbox-row">
+                <input type="checkbox" id="cf_revoked" /> 标记为已吊销
+              </label>
+            </div>
+            <div class="form-row full" id="cf_reasonWrap" hidden>
+              <label>吊销原因</label>
+              <input class="input" id="cf_revokedReason" maxlength="200" />
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:6px">
+            <button type="button" class="btn btn-ghost" style="flex:1" data-close="certModal">取消</button>
+            <button type="submit" class="btn btn-primary" style="flex:1" id="certSaveBtn">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 管理员编辑弹窗 -->
+  <div class="modal-mask" id="adminModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-head">
+        <h3 id="adminModalTitle">新增管理员</h3>
+        <button class="modal-close" data-close="adminModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="adminFormAlert" class="alert alert-error" hidden></div>
+        <form id="adminForm">
+          <div class="form-row">
+            <label>用户名 *</label>
+            <input class="input" id="af_username" maxlength="32" />
+            <p class="hint">3-32 位字母、数字或 . _ -</p>
+          </div>
+          <div class="form-row">
+            <label>显示姓名 *</label>
+            <input class="input" id="af_displayName" maxlength="50" />
+          </div>
+          <div class="form-row">
+            <label>角色 *</label>
+            <select class="select" id="af_role">
+              <option value="editor">编辑（维护证书）</option>
+              <option value="super">超级管理员（全部权限）</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>初始密码 *</label>
+            <input class="input" id="af_password" type="text" minlength="10" />
+            <p class="hint">至少 10 位，且包含大写、小写、数字、特殊字符中的 3 种</p>
+          </div>
+          <div class="form-row">
+            <label class="checkbox-row">
+              <input type="checkbox" id="af_mustChange" checked /> 首次登录时要求修改密码
+            </label>
+          </div>
+          <div class="form-row">
+            <label class="checkbox-row">
+              <input type="checkbox" id="af_active" checked /> 账号启用
+            </label>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:6px">
+            <button type="button" class="btn btn-ghost" style="flex:1" data-close="adminModal">取消</button>
+            <button type="submit" class="btn btn-primary" style="flex:1">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 修改密码弹窗（自己） -->
+  <div class="modal-mask" id="pwdModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-head">
+        <h3>修改密码</h3>
+        <button class="modal-close" data-close="pwdModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="pwdAlert" class="alert alert-error" hidden></div>
+        <form id="pwdForm">
+          <div class="form-row">
+            <label>原密码</label>
+            <input class="input" id="pf_old" type="password" autocomplete="current-password" />
+          </div>
+          <div class="form-row">
+            <label>新密码</label>
+            <input class="input" id="pf_new" type="password" autocomplete="new-password" />
+            <p class="hint">至少 10 位，且包含大写、小写、数字、特殊字符中的 3 种</p>
+          </div>
+          <div class="form-row">
+            <label>确认新密码</label>
+            <input class="input" id="pf_new2" type="password" autocomplete="new-password" />
+          </div>
+          <div style="display:flex;gap:10px;margin-top:6px">
+            <button type="button" class="btn btn-ghost" style="flex:1" data-close="pwdModal">取消</button>
+            <button type="submit" class="btn btn-primary" style="flex:1">确认修改</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 重置他人密码弹窗 -->
+  <div class="modal-mask" id="resetPwdModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-head">
+        <h3 id="resetPwdTitle">重置密码</h3>
+        <button class="modal-close" data-close="resetPwdModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="resetPwdAlert" class="alert alert-error" hidden></div>
+        <form id="resetPwdForm">
+          <div class="form-row">
+            <label>新密码</label>
+            <input class="input" id="rf_new" type="text" />
+            <p class="hint">对方下次登录时将被要求修改此密码</p>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:6px">
+            <button type="button" class="btn btn-ghost" style="flex:1" data-close="resetPwdModal">取消</button>
+            <button type="submit" class="btn btn-primary" style="flex:1">确认重置</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

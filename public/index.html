@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>培训证书核验</title>
+  <meta name="description" content="输入证书编号与姓名，核验培训证书信息" />
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%231d4ed8' d='M12 2 3 6v6c0 5 3.8 9.4 9 10 5.2-.6 9-5 9-10V6l-9-4zm-1 13.4-3-3L9.4 11 11 12.6l3.6-3.6L16 10.4 11 15.4z'/%3E%3C/svg%3E" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-badge" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 6v6c0 5 3.8 9.4 9 10 5.2-.6 9-5 9-10V6l-9-4z"/><path d="m9 12 2 2 4-4"/></svg>
+        </span>
+        培训证书核验平台
+      </div>
+      <span class="topbar-spacer"></span>
+      <a class="topbar-link" href="/admin">管理登录</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <h1>培训证书在线核验</h1>
+      <p>输入证书上的<strong>证书编号</strong>与<strong>学员姓名</strong>，即可核验证书的真实信息与当前状态。</p>
+    </div>
+  </section>
+
+  <main class="page-wrap">
+    <div class="card">
+      <h2 class="card-title">证书信息核验</h2>
+      <div id="verifyAlert" class="alert alert-error" hidden></div>
+      <form id="verifyForm" autocomplete="off">
+        <div class="form-row">
+          <label for="certNo">证书编号</label>
+          <input class="input" id="certNo" name="certNo" type="text" maxlength="64"
+                 placeholder="例如：PX-2026-000127" required />
+        </div>
+        <div class="form-row">
+          <label for="studentName">学员姓名</label>
+          <input class="input" id="studentName" name="studentName" type="text" maxlength="50"
+                 placeholder="请输入证书上登记的姓名" required />
+        </div>
+        <button class="btn btn-primary btn-block" id="verifyBtn" type="submit">
+          <span id="verifyBtnText">立即核验</span>
+        </button>
+        <p class="hint">核验信息仅用于证书真伪查询，请妥善保管个人证书信息。</p>
+      </form>
+
+      <div id="result" class="result" hidden>
+        <div class="result-head">
+          <span class="cert-no">证书编号：<b id="rCertNo"></b></span>
+          <span id="rStatus" class="badge"></span>
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="k">学员姓名</div>
+            <div class="v" id="rName"></div>
+          </div>
+          <div class="info-item">
+            <div class="k">课程名称</div>
+            <div class="v" id="rCourse"></div>
+          </div>
+          <div class="info-item">
+            <div class="k">发证日期</div>
+            <div class="v" id="rIssue"></div>
+          </div>
+          <div class="info-item">
+            <div class="k">有效期至</div>
+            <div class="v" id="rValid"></div>
+          </div>
+          <div class="info-item full">
+            <div class="k">培训机构</div>
+            <div class="v" id="rInstitution"></div>
+          </div>
+          <div class="info-item full">
+            <div class="k">联系邮箱（用于接收培训通知）</div>
+            <div class="v">
+              <div class="contact-row">
+                <span id="rEmail">—</span>
+                <button type="button" class="btn btn-ghost btn-sm" id="changeEmailBtn">申请更正邮箱</button>
+              </div>
+            </div>
+          </div>
+          <div class="info-item full" id="reasonRow" hidden>
+            <div class="k">状态说明</div>
+            <div class="v" id="rReason" style="color:var(--red);font-weight:500;font-size:13.5px"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="notMatched" class="result" hidden>
+        <div class="alert alert-warning" style="margin-bottom:0">
+          未查询到与“证书编号 + 姓名”匹配的证书。请核对证书编号与姓名是否与证书一致；如有疑问，请联系发证的培训机构。
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 邮箱更正弹窗 -->
+  <div class="modal-mask" id="emailModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="emailModalTitle">
+      <div class="modal-head">
+        <h3 id="emailModalTitle">更正联系邮箱</h3>
+        <button class="modal-close" id="emailModalClose" aria-label="关闭">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="steps">
+          <div class="step active" id="step1">1. 填写新邮箱</div>
+          <div class="step" id="step2">2. 输入验证码</div>
+          <div class="step" id="step3">3. 完成</div>
+        </div>
+        <div id="emailAlert" class="alert alert-error" hidden></div>
+
+        <div id="pane1">
+          <p class="hint" style="margin:0 0 14px">
+            更正申请通过邮箱验证码确认身份。验证码将发送至您填写的新邮箱，
+            <strong id="cooldownHint" hidden></strong>
+          </p>
+          <div class="form-row">
+            <label for="newEmail">新联系邮箱</label>
+            <input class="input" id="newEmail" type="email" maxlength="254"
+                   placeholder="name@example.com" autocomplete="off" />
+          </div>
+          <button class="btn btn-primary btn-block" id="sendCodeBtn">
+            <span id="sendCodeBtnText">发送验证码</span>
+          </button>
+        </div>
+
+        <div id="pane2" hidden>
+          <p class="hint" style="margin:0 0 14px">
+            验证码已发送至 <strong id="sentEmailText"></strong>，
+            邮件可能被归入垃圾邮件，10 分钟内有效。
+          </p>
+          <div class="form-row">
+            <label for="codeInput">6 位邮箱验证码</label>
+            <input class="input code-input" id="codeInput" inputmode="numeric" maxlength="6"
+                   placeholder="------" autocomplete="one-time-code" />
+          </div>
+          <button class="btn btn-primary btn-block" id="confirmCodeBtn" style="margin-bottom:10px">
+            <span id="confirmCodeBtnText">确认更正</span>
+          </button>
+          <button class="btn btn-ghost btn-block" id="resendCodeBtn" type="button">重新发送验证码</button>
+        </div>
+
+        <div id="pane3" hidden>
+          <div class="alert alert-success" style="margin-top:4px">
+            联系邮箱已更正成功，更正结果通知已发送至新邮箱。
+          </div>
+          <button class="btn btn-primary btn-block" id="doneBtn">完成</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    本平台所展示的证书信息由发证培训机构维护 · 培训证书核验平台
+  </footer>
+
+  <div class="toast" id="toast"></div>
+  <script src="/js/app.js"></script>
+</body>
+</html>
